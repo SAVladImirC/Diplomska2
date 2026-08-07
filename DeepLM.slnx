@@ -1,0 +1,22 @@
+<Solution>
+  <Folder Name="/01-NTier/">
+    <Project Path="src/01-NTier/NTier.Data/NTier.Data.csproj" />
+    <Project Path="src/01-NTier/NTier.Presentation/NTier.Presentation.csproj" />
+    <Project Path="src/01-NTier/NTier.Services/NTier.Services.csproj" />
+  </Folder>
+  <Folder Name="/02-CleanArchitecture/">
+    <Project Path="src/02-CleanArchitecture/CleanArchitecture.Application/CleanArchitecture.Application.csproj" />
+    <Project Path="src/02-CleanArchitecture/CleanArchitecture.Domain/CleanArchitecture.Domain.csproj" />
+    <Project Path="src/02-CleanArchitecture/CleanArchitecture.Infrastructure/CleanArchitecture.Infrastructure.csproj" />
+    <Project Path="src/02-CleanArchitecture/CleanArchitecture.Presentation/CleanArchitecture.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/03-VerticalSlice/">
+    <Project Path="src/03-VerticalSlice/VerticalSlice.Infrastructure/VerticalSlice.Infrastructure.csproj" />
+    <Project Path="src/03-VerticalSlice/VerticalSlice.Web/VerticalSlice.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/CleanArchitecture.Tests/CleanArchitecture.Tests.csproj" />
+    <Project Path="tests/NTier.Tests/NTier.Tests.csproj" />
+    <Project Path="tests/VerticalSlice.Tests/VerticalSlice.Tests.csproj" />
+  </Folder>
+</Solution>
