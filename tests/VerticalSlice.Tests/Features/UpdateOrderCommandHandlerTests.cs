@@ -35,8 +35,6 @@ public class UpdateOrderCommandHandlerTests
     [Fact]
     public async Task Handle_MatchesCreateOrder_ForTheSameDiscountRule()
     {
-        // The rule is duplicated between the two handlers by design (see both
-        // handlers' comments); this test guards that the duplication hasn't drifted.
         await using var context = CreateContext();
         var customer = new Customer { Name = "Тест", Email = "test@example.com" };
         var product = new Product { Name = "Widget", UnitPrice = 60m };

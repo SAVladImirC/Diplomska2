@@ -4,7 +4,6 @@ using CleanArchitecture.Domain.Entities;
 
 namespace CleanArchitecture.Infrastructure.Services;
 
-/// <summary>Produces a plain-text stand-in for a PDF, so the demo needs no PDF library.</summary>
 public class SimplePdfGenerator : IPdfGenerator
 {
     public Task<byte[]> GenerateInvoiceAsync(Order order)

@@ -7,10 +7,6 @@ using Xunit;
 
 namespace VerticalSlice.Tests.Features;
 
-/// <summary>
-/// Only needs an AppDbContext and the one shared IEmailService -- no unrelated
-/// interfaces to stub, because this slice doesn't depend on anything it doesn't use.
-/// </summary>
 public class CreateOrderCommandHandlerTests
 {
     private static AppDbContext CreateContext() =>

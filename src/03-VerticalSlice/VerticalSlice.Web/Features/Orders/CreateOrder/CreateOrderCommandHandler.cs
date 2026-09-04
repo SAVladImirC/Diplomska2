@@ -1,17 +1,11 @@
 using MediatR;
+using VerticalSlice.Infrastructure.Common;
 using VerticalSlice.Infrastructure.Entities;
 using VerticalSlice.Infrastructure.Persistence;
 using VerticalSlice.Infrastructure.Services;
 
 namespace VerticalSlice.Web.Features.Orders.CreateOrder;
 
-/// <summary>
-/// Talks to AppDbContext directly rather than through a repository abstraction --
-/// the common practice for vertical slices described in the thesis. The 10%-discount
-/// rule is calculated here and, deliberately, again in UpdateOrderCommandHandler
-/// rather than in a shared helper, to keep the two slices independent at the cost of
-/// duplication.
-/// </summary>
 public class CreateOrderCommandHandler(AppDbContext db, IEmailService emailService)
     : IRequestHandler<CreateOrderCommand, CreateOrderResponse>
 {
@@ -21,14 +15,14 @@ public class CreateOrderCommandHandler(AppDbContext db, IEmailService emailServi
     public async Task<CreateOrderResponse> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
     {
         var customer = await db.Customers.FindAsync([request.CustomerId], cancellationToken)
-            ?? throw new InvalidOperationException($"Customer {request.CustomerId} does not exist.");
+            ?? throw new NotFoundException(nameof(Customer), request.CustomerId);
 
         var order = new Order { CustomerId = request.CustomerId, Status = OrderStatus.Pending };
 
         foreach (var line in request.Items)
         {
             var product = await db.Products.FindAsync([line.ProductId], cancellationToken)
-                ?? throw new InvalidOperationException($"Product {line.ProductId} does not exist.");
+                ?? throw new NotFoundException(nameof(Product), line.ProductId);
 
             order.Items.Add(new OrderItem
             {

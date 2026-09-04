@@ -1,6 +1,33 @@
-@VerticalSlice.Web_HostAddress = http://localhost:5119
+@host = http://localhost:5003
 
-GET {{VerticalSlice.Web_HostAddress}}/weatherforecast/
+GET {{host}}/orders
 Accept: application/json
 
 ###
+
+POST {{host}}/orders
+Content-Type: application/json
+
+{
+  "customerId": 1,
+  "items": [
+    { "productId": 1, "quantity": 1 },
+    { "productId": 2, "quantity": 1 }
+  ]
+}
+
+###
+
+PUT {{host}}/orders/1
+Content-Type: application/json
+
+{
+  "customerId": 1,
+  "items": [
+    { "productId": 2, "quantity": 2 }
+  ]
+}
+
+###
+
+DELETE {{host}}/orders/1

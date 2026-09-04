@@ -34,9 +34,6 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
             });
         });
 
-        // Table-per-hierarchy: Order and PriorityOrder share one table, distinguished
-        // by a discriminator column, so a repository built against Order transparently
-        // reads/writes PriorityOrder rows too.
         builder.HasDiscriminator<string>("OrderType")
             .HasValue<Order>("Standard")
             .HasValue<PriorityOrder>("Priority");

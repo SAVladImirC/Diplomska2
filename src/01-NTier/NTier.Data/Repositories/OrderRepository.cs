@@ -5,8 +5,6 @@ namespace NTier.Data.Repositories;
 
 public class OrderRepository(AppDbContext context) : Repository<Order>(context)
 {
-    // The base Repository<T> doesn't know to eager-load Items; Order is never
-    // meaningful without them (Subtotal depends on Items), so every read here does.
     public override async Task<Order?> GetByIdAsync(int id) =>
         await Context.Orders.Include(o => o.Items).FirstOrDefaultAsync(o => o.Id == id);
 

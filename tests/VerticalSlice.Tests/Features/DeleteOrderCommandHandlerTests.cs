@@ -22,8 +22,6 @@ public class DeleteOrderCommandHandlerTests
     [Fact]
     public async Task Handle_OnDeliveredOrder_SoftDeletesWithoutThrowing()
     {
-        // Same "delivered order" scenario as NTier's LSP-violation test, but there is
-        // no shared generic repository here for a status check to break against.
         await using var context = CreateContext();
         var customer = new Customer { Name = "Тест", Email = "test@example.com" };
         var order = new Order { CustomerId = 0, Status = OrderStatus.Delivered };

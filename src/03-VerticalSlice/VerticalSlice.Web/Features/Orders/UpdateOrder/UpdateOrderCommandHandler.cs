@@ -1,15 +1,11 @@
 using MediatR;
+using VerticalSlice.Infrastructure.Common;
 using Microsoft.EntityFrameworkCore;
 using VerticalSlice.Infrastructure.Entities;
 using VerticalSlice.Infrastructure.Persistence;
 
 namespace VerticalSlice.Web.Features.Orders.UpdateOrder;
 
-/// <summary>
-/// The 10%-discount rule is recalculated here independently of
-/// CreateOrderCommandHandler -- a deliberate duplication rather than a shared
-/// helper, in keeping with each slice owning everything it needs.
-/// </summary>
 public class UpdateOrderCommandHandler(AppDbContext db) : IRequestHandler<UpdateOrderCommand, UpdateOrderResponse>
 {
     private const decimal DiscountThreshold = 100m;
@@ -20,7 +16,7 @@ public class UpdateOrderCommandHandler(AppDbContext db) : IRequestHandler<Update
         var order = await db.Orders
             .Include(o => o.Items)
             .FirstOrDefaultAsync(o => o.Id == request.OrderId && !o.IsDeleted, cancellationToken)
-            ?? throw new InvalidOperationException($"Order {request.OrderId} does not exist.");
+            ?? throw new NotFoundException(nameof(Order), request.OrderId);
 
         if (order.Status is OrderStatus.Delivered or OrderStatus.Cancelled)
             throw new InvalidOperationException($"Order {order.Id} cannot be modified because it is already {order.Status}.");
@@ -31,7 +27,7 @@ public class UpdateOrderCommandHandler(AppDbContext db) : IRequestHandler<Update
         foreach (var line in request.Items)
         {
             var product = await db.Products.FindAsync([line.ProductId], cancellationToken)
-                ?? throw new InvalidOperationException($"Product {line.ProductId} does not exist.");
+                ?? throw new NotFoundException(nameof(Product), line.ProductId);
 
             order.Items.Add(new OrderItem
             {

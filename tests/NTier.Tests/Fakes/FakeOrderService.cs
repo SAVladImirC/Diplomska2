@@ -3,13 +3,6 @@ using NTier.Services.Dtos;
 
 namespace NTier.Tests.Fakes;
 
-/// <summary>
-/// A hand-written test double for <see cref="IOrderService"/>. The point of this class
-/// is what it has to contain: to test a controller action that only calls
-/// <see cref="GetOrders"/>, every other member of the fat interface still has to be
-/// implemented here, including invoicing and email notifications the test never
-/// touches. That forced breadth is the ISP violation made concrete.
-/// </summary>
 public class FakeOrderService : IOrderService
 {
     public List<OrderDto> OrdersToReturn { get; set; } = [];

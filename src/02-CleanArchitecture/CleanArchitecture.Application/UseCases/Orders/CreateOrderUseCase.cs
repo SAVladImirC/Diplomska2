@@ -10,7 +10,8 @@ public class CreateOrderUseCase(
     IValidateOrderUseCase validator,
     ICalculateOrderTotalUseCase totalCalculator,
     IProductLookup products,
-    IAddOrder orderWriter) : ICreateOrderUseCase
+    IAddOrder orderWriter,
+    IUnitOfWork unitOfWork) : ICreateOrderUseCase
 {
     public async Task<OrderDto> ExecuteAsync(CreateOrderRequest request)
     {
@@ -27,6 +28,7 @@ public class CreateOrderUseCase(
 
         var order = Order.Create(request.CustomerId, items);
         await orderWriter.AddAsync(order);
+        await unitOfWork.SaveChangesAsync();
 
         return OrderMapper.ToDto(order, totalCalculator);
     }

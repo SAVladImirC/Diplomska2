@@ -1,6 +1,49 @@
-@NTier.Presentation_HostAddress = http://localhost:5236
+@host = http://localhost:5001
 
-GET {{NTier.Presentation_HostAddress}}/weatherforecast/
+GET {{host}}/orders
 Accept: application/json
 
 ###
+
+GET {{host}}/orders/1
+
+###
+
+POST {{host}}/orders
+Content-Type: application/json
+
+{
+  "customerId": 1,
+  "items": [
+    { "productId": 1, "quantity": 1 },
+    { "productId": 2, "quantity": 1 }
+  ]
+}
+
+###
+
+PUT {{host}}/orders/1
+Content-Type: application/json
+
+{
+  "customerId": 1,
+  "items": [
+    { "productId": 2, "quantity": 2 }
+  ]
+}
+
+###
+
+GET {{host}}/orders/1/tax
+
+###
+
+GET {{host}}/orders/1/invoice
+
+###
+
+POST {{host}}/orders/1/send-confirmation
+
+###
+
+DELETE {{host}}/orders/1

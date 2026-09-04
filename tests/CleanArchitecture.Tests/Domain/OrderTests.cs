@@ -1,5 +1,6 @@
 using CleanArchitecture.Domain.Entities;
 using CleanArchitecture.Domain.Enums;
+using CleanArchitecture.Domain.Events;
 using CleanArchitecture.Domain.Exceptions;
 using CleanArchitecture.Domain.ValueObjects;
 using Xunit;
@@ -17,6 +18,15 @@ public class OrderTests
     }
 
     [Fact]
+    public void Create_RaisesOrderCreatedDomainEvent()
+    {
+        var order = Order.Create(1, [OneItem()]);
+
+        var created = Assert.IsType<OrderCreatedDomainEvent>(Assert.Single(order.DomainEvents));
+        Assert.Same(order, created.Order);
+    }
+
+    [Fact]
     public void UpdateDetails_OnDeliveredOrder_ThrowsAsDocumentedBusinessRule()
     {
         var order = Order.Create(1, [OneItem()]);
@@ -28,9 +38,6 @@ public class OrderTests
     [Fact]
     public void MarkDeleted_OnDeliveredOrder_NeverThrows()
     {
-        // The same "delivered" scenario that breaks NTier's IRepository<Order>.DeleteAsync
-        // (see OrderRepositoryLspTests in NTier.Tests) succeeds here without incident,
-        // because ISoftDeleteOrder only ever promises a soft delete.
         var order = Order.Create(1, [OneItem()]);
         order.MarkDelivered();
 
@@ -43,8 +50,6 @@ public class OrderTests
     [Fact]
     public void PriorityOrder_SubstitutesForOrder_WithoutSurprises()
     {
-        // A PriorityOrder can be used anywhere an Order is expected: no throwing
-        // repository method, no NotImplementedException, no special-casing needed.
         Order order = PriorityOrder.Create(
             customerId: 1,
             items: [OneItem()],
@@ -59,8 +64,6 @@ public class OrderTests
     [Fact]
     public void Equality_IsByIdentity_NotByStructure()
     {
-        // Order is an Entity, not a Value Object: two distinct in-memory instances
-        // with identical field values but no assigned Id are not the same order.
         var first = Order.Create(1, [OneItem()]);
         var second = Order.Create(1, [OneItem()]);
 

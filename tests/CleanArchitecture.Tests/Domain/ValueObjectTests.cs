@@ -9,7 +9,6 @@ public class ValueObjectTests
     [Fact]
     public void Money_WithEqualAmountAndCurrency_AreEqual()
     {
-        // Money is a Value Object: equality is structural, unlike Order's identity equality.
         Assert.Equal(new Money(50m, "MKD"), new Money(50m, "MKD"));
     }
 

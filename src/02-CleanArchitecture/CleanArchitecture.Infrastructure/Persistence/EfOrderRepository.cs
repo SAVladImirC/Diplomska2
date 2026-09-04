@@ -4,11 +4,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CleanArchitecture.Infrastructure.Persistence;
 
-/// <summary>
-/// One class can implement every tiny role interface -- ISP is about what a
-/// *consumer* is forced to depend on, not about how many interfaces a single
-/// implementation may satisfy.
-/// </summary>
 public class EfOrderRepository(AppDbContext context) : IOrderRepository
 {
     public async Task<Order?> GetByIdAsync(int id) =>
@@ -22,24 +17,21 @@ public class EfOrderRepository(AppDbContext context) : IOrderRepository
             .Where(o => !o.IsDeleted)
             .ToListAsync();
 
-    public async Task AddAsync(Order order)
+    public Task AddAsync(Order order)
     {
         context.Orders.Add(order);
-        await context.SaveChangesAsync();
+        return Task.CompletedTask;
     }
 
-    public async Task UpdateAsync(Order order)
+    public Task UpdateAsync(Order order)
     {
         context.Orders.Update(order);
-        await context.SaveChangesAsync();
+        return Task.CompletedTask;
     }
 
     public async Task SoftDeleteAsync(int orderId)
     {
         var order = await context.Orders.FirstOrDefaultAsync(o => o.Id == orderId);
-        if (order is null) return;
-
-        order.MarkDeleted();
-        await context.SaveChangesAsync();
+        order?.MarkDeleted();
     }
 }

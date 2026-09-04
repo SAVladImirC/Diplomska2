@@ -4,11 +4,6 @@ using NTier.Services.Dtos;
 
 namespace NTier.Services;
 
-/// <summary>
-/// Implements every member of <see cref="IOrderService"/>. Order validation, discount
-/// calculation, tax calculation, DTO mapping and notification all live here together,
-/// which is exactly the "thick service" shape the N-Tier layer tends to produce.
-/// </summary>
 public class OrderService(
     IRepository<Order> orders,
     IRepository<Product> products,
@@ -26,6 +21,7 @@ public class OrderService(
 
     public async Task<OrderDto> CreateOrder(CreateOrderRequest request)
     {
+        ValidateItems(request);
         await ValidateCustomerExists(request.CustomerId);
 
         var order = new Order
@@ -56,6 +52,7 @@ public class OrderService(
         var order = await orders.GetByIdAsync(orderId)
             ?? throw new InvalidOperationException($"Order {orderId} does not exist.");
 
+        ValidateItems(request);
         await ValidateCustomerExists(request.CustomerId);
 
         order.CustomerId = request.CustomerId;
@@ -105,13 +102,21 @@ public class OrderService(
         Console.WriteLine($"[NTier] Confirmation email sent for order {order.Id}.");
     }
 
-    private async Task ValidateCustomerExists(int customerId)
+    private static void ValidateItems(CreateOrderRequest request)
+    {
+        if (request.Items.Count == 0)
+            throw new InvalidOperationException("An order must contain at least one item.");
+
+        if (request.Items.Any(i => i.Quantity <= 0))
+            throw new InvalidOperationException("Order item quantity must be positive.");
+    }
+
+    protected virtual async Task ValidateCustomerExists(int customerId)
     {
         _ = await customers.GetByIdAsync(customerId)
             ?? throw new InvalidOperationException($"Customer {customerId} does not exist.");
     }
 
-    /// <summary>The recurring business rule: orders over 100 get a 10% discount.</summary>
     private static decimal ApplyDiscount(decimal subtotal) =>
         subtotal > DiscountThreshold ? subtotal * (1 - DiscountRate) : subtotal;
 

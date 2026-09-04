@@ -2,11 +2,6 @@ using NTier.Services.Dtos;
 
 namespace NTier.Services;
 
-/// <summary>
-/// The single business-logic interface for everything order-related: reads, writes,
-/// tax, invoicing and notifications all live behind one contract. Any consumer that
-/// only needs one of these seven members is still forced to depend on all of them.
-/// </summary>
 public interface IOrderService
 {
     Task<List<OrderDto>> GetOrders();

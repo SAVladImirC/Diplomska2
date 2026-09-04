@@ -1,20 +1,26 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using NTier.Data;
+using NTier.Data.Entities;
 using NTier.Services;
 using NTier.Services.Dtos;
 
 namespace NTier.Presentation.Controllers;
 
-/// <summary>
-/// Depends on the entire <see cref="IOrderService"/>, even though a given action
-/// (e.g. listing orders) only ever calls one of its seven members.
-/// </summary>
 [ApiController]
 [Route("orders")]
-public class OrdersController(IOrderService orderService) : ControllerBase
+public class OrdersController(IOrderService orderService, AppDbContext db) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<List<OrderDto>>> GetOrders() =>
         Ok(await orderService.GetOrders());
+
+    [HttpGet("{orderId:int}")]
+    public async Task<ActionResult<Order>> GetOrder(int orderId)
+    {
+        var order = await db.Orders.Include(o => o.Items).FirstOrDefaultAsync(o => o.Id == orderId);
+        return order is null ? NotFound() : Ok(order);
+    }
 
     [HttpPost]
     public async Task<ActionResult<OrderDto>> CreateOrder(CreateOrderRequest request) =>

@@ -1,6 +1,8 @@
 using CleanArchitecture.Application.Abstractions;
+using CleanArchitecture.Application.EventHandlers;
 using CleanArchitecture.Application.UseCases.Orders;
 using CleanArchitecture.Domain.Entities;
+using CleanArchitecture.Domain.Events;
 using CleanArchitecture.Infrastructure.Persistence;
 using CleanArchitecture.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
@@ -15,25 +17,33 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("Default")
         ?? "Data Source=cleanarchitecture.db"));
 
-// EfOrderRepository implements every tiny role interface at once; each interface is
-// exposed separately so a consumer only ever needs to declare the one(s) it uses.
 builder.Services.AddScoped<EfOrderRepository>();
 builder.Services.AddScoped<IGetOrders>(sp => sp.GetRequiredService<EfOrderRepository>());
 builder.Services.AddScoped<IAddOrder>(sp => sp.GetRequiredService<EfOrderRepository>());
 builder.Services.AddScoped<IUpdateOrder>(sp => sp.GetRequiredService<EfOrderRepository>());
 builder.Services.AddScoped<ISoftDeleteOrder>(sp => sp.GetRequiredService<EfOrderRepository>());
 builder.Services.AddScoped<IOrderRepository>(sp => sp.GetRequiredService<EfOrderRepository>());
+builder.Services.AddScoped<IOrderQueries, EfOrderQueries>();
 
 builder.Services.AddScoped<ICustomerLookup, EfCustomerLookup>();
 builder.Services.AddScoped<IProductLookup, EfProductLookup>();
 builder.Services.AddScoped<IUnitOfWork, EfUnitOfWork>();
+builder.Services.AddScoped<IDomainEventDispatcher, ServiceProviderDomainEventDispatcher>();
 builder.Services.AddScoped<IEmailService, ConsoleEmailService>();
 builder.Services.AddScoped<IPdfGenerator, SimplePdfGenerator>();
+builder.Services.AddSingleton<IFileStorage>(
+    new LocalFileStorage(builder.Configuration["Storage:Directory"] ?? "storage"));
 
 builder.Services.AddScoped<IValidateOrderUseCase, ValidateOrderUseCase>();
 builder.Services.AddScoped<ICalculateOrderTotalUseCase, CalculateOrderTotalUseCase>();
 builder.Services.AddScoped<ICreateOrderUseCase, CreateOrderUseCase>();
 builder.Services.AddScoped<IUpdateOrderUseCase, UpdateOrderUseCase>();
+builder.Services.AddScoped<ISoftDeleteOrderUseCase, SoftDeleteOrderUseCase>();
+builder.Services.AddScoped<IGetOrdersUseCase, GetOrdersUseCase>();
+builder.Services.AddScoped<IGetOrderByIdUseCase, GetOrderByIdUseCase>();
+builder.Services.AddScoped<IGenerateInvoiceUseCase, GenerateInvoiceUseCase>();
+builder.Services.AddScoped<ISendOrderConfirmationUseCase, SendOrderConfirmationUseCase>();
+builder.Services.AddScoped<IDomainEventHandler<OrderCreatedDomainEvent>, OrderCreatedDomainEventHandler>();
 
 var app = builder.Build();
 

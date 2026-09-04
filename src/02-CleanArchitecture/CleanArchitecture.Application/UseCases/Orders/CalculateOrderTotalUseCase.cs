@@ -2,7 +2,6 @@ using CleanArchitecture.Domain.ValueObjects;
 
 namespace CleanArchitecture.Application.UseCases.Orders;
 
-/// <summary>The recurring business rule across all three architectures: orders over 100 get a 10% discount.</summary>
 public class CalculateOrderTotalUseCase : ICalculateOrderTotalUseCase
 {
     private const decimal DiscountThreshold = 100m;

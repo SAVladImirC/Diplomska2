@@ -14,8 +14,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("Default")
         ?? "Data Source=ntier.db"));
 
-// IRepository<Order> resolves to OrderRepository -- callers coding against the generic
-// contract get the delivered-order LSP surprise described in the thesis.
 builder.Services.AddScoped<IRepository<Order>, OrderRepository>();
 builder.Services.AddScoped<IRepository<Product>, Repository<Product>>();
 builder.Services.AddScoped<IRepository<Customer>, Repository<Customer>>();

@@ -8,7 +8,6 @@ using Xunit;
 
 namespace NTier.Tests;
 
-/// <summary>The recurring business rule across all three architectures: orders over 100 get a 10% discount.</summary>
 public class OrderServiceDiscountTests
 {
     private static async Task<(AppDbContext Context, Customer Customer, Product Product)> SeedAsync()
@@ -38,7 +37,7 @@ public class OrderServiceDiscountTests
         var order = await service.CreateOrder(new CreateOrderRequest
         {
             CustomerId = customer.Id,
-            Items = [new CreateOrderItemRequest { ProductId = product.Id, Quantity = 2 }] // 120 subtotal
+            Items = [new CreateOrderItemRequest { ProductId = product.Id, Quantity = 2 }]
         });
 
         Assert.Equal(120m, order.Subtotal);
@@ -55,7 +54,7 @@ public class OrderServiceDiscountTests
         var order = await service.CreateOrder(new CreateOrderRequest
         {
             CustomerId = customer.Id,
-            Items = [new CreateOrderItemRequest { ProductId = product.Id, Quantity = 1 }] // 60 subtotal
+            Items = [new CreateOrderItemRequest { ProductId = product.Id, Quantity = 1 }]
         });
 
         Assert.Equal(60m, order.Subtotal);

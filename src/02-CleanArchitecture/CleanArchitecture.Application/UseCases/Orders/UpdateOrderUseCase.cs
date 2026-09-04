@@ -2,7 +2,6 @@ using CleanArchitecture.Application.Abstractions;
 using CleanArchitecture.Application.Dtos;
 using CleanArchitecture.Domain.Exceptions;
 using CleanArchitecture.Domain.ValueObjects;
-using CleanArchitecture.Domain.Entities;
 
 namespace CleanArchitecture.Application.UseCases.Orders;
 
@@ -11,7 +10,8 @@ public class UpdateOrderUseCase(
     ICalculateOrderTotalUseCase totalCalculator,
     IProductLookup products,
     IGetOrders orderReader,
-    IUpdateOrder orderWriter) : IUpdateOrderUseCase
+    IUpdateOrder orderWriter,
+    IUnitOfWork unitOfWork) : IUpdateOrderUseCase
 {
     public async Task<OrderDto> ExecuteAsync(int orderId, CreateOrderRequest request)
     {
@@ -31,6 +31,7 @@ public class UpdateOrderUseCase(
 
         order.UpdateDetails(request.CustomerId, items);
         await orderWriter.UpdateAsync(order);
+        await unitOfWork.SaveChangesAsync();
 
         return OrderMapper.ToDto(order, totalCalculator);
     }

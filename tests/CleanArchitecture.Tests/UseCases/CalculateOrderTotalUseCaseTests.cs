@@ -4,7 +4,6 @@ using Xunit;
 
 namespace CleanArchitecture.Tests.UseCases;
 
-/// <summary>The same recurring business rule as NTier.Tests.OrderServiceDiscountTests, in isolation here.</summary>
 public class CalculateOrderTotalUseCaseTests
 {
     private readonly CalculateOrderTotalUseCase _useCase = new();

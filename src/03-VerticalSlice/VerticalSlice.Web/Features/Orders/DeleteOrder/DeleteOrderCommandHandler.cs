@@ -5,13 +5,6 @@ using VerticalSlice.Infrastructure.Services;
 
 namespace VerticalSlice.Web.Features.Orders.DeleteOrder;
 
-/// <summary>
-/// Soft-deletes directly against AppDbContext -- there is no shared generic
-/// repository here for a status check to surprise, unlike N-Tier's
-/// IRepository&lt;Order&gt;.DeleteAsync. IEmailService is the one dependency this
-/// slice shares with CreateOrder; changing its signature is the one way a change
-/// here would ripple into another, otherwise unrelated, slice.
-/// </summary>
 public class DeleteOrderCommandHandler(AppDbContext db, IEmailService emailService) : IRequestHandler<DeleteOrderCommand>
 {
     public async Task Handle(DeleteOrderCommand request, CancellationToken cancellationToken)

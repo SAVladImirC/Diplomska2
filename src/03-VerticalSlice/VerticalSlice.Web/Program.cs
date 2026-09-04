@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using VerticalSlice.Infrastructure.Entities;
 using VerticalSlice.Infrastructure.Persistence;
 using VerticalSlice.Infrastructure.Services;
+using VerticalSlice.Web.Common;
 using VerticalSlice.Web.Features.Orders.CreateOrder;
 using VerticalSlice.Web.Features.Orders.DeleteOrder;
 using VerticalSlice.Web.Features.Orders.GetOrders;
@@ -18,7 +19,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         ?? "Data Source=verticalslice.db"));
 
 builder.Services.AddScoped<IEmailService, ConsoleEmailService>();
-builder.Services.AddScoped<IUnitOfWork, EfUnitOfWork>();
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<NotFoundExceptionHandler>();
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
@@ -31,6 +33,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseExceptionHandler();
 app.UseHttpsRedirection();
 
 app.MapCreateOrder();

@@ -5,12 +5,6 @@ using CleanArchitecture.Domain.ValueObjects;
 
 namespace CleanArchitecture.Domain.Entities;
 
-/// <summary>
-/// The aggregate root. Declared as a `record` so it is immutable by default and so
-/// <see cref="PriorityOrder"/> can inherit it directly -- but an Order is still an
-/// Entity, not a Value Object, so identity-based equality is restored below instead
-/// of the record's usual structural equality.
-/// </summary>
 public record Order
 {
     public int Id { get; private set; }
@@ -35,7 +29,7 @@ public record Order
 
         var order = new Order { CustomerId = customerId };
         order.SetItems(items);
-        order._domainEvents.Add(new OrderCreatedDomainEvent(order.Id));
+        order._domainEvents.Add(new OrderCreatedDomainEvent(order));
         return order;
     }
 
@@ -53,12 +47,6 @@ public record Order
 
     public Money Subtotal => Items.Aggregate(Money.Zero, (total, item) => total + item.LineTotal);
 
-    /// <summary>
-    /// Enforces the same "delivered orders are frozen" rule that N-Tier enforces in
-    /// its repository -- but here it lives in the entity, as an expected part of this
-    /// method's own contract, so throwing is a documented business rule rather than a
-    /// surprise sprung on a generic interface's caller.
-    /// </summary>
     public void UpdateDetails(int customerId, IReadOnlyList<OrderItem> items)
     {
         if (Status is OrderStatus.Delivered or OrderStatus.Cancelled)
@@ -75,14 +63,9 @@ public record Order
             throw new OrderDomainException($"Order {Id} cannot transition from {Status} to Delivered.");
 
         Status = OrderStatus.Delivered;
-        _domainEvents.Add(new OrderDeliveredDomainEvent(Id));
+        _domainEvents.Add(new OrderDeliveredDomainEvent(this));
     }
 
-    /// <summary>
-    /// Flips a flag -- unlike N-Tier's IRepository&lt;Order&gt;.DeleteAsync, this never
-    /// throws regardless of order status, because the interface that exposes it
-    /// (ISoftDeleteOrder) only ever promises a soft delete in the first place.
-    /// </summary>
     public void MarkDeleted() => IsDeleted = true;
 
     public void ClearDomainEvents() => _domainEvents.Clear();
